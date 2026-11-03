@@ -41,8 +41,9 @@ To handle the complexity of regulatory filings where standard vector search ofte
 ## 💻 Run it Locally
 
 ### 1. Clone the repository
+Run this Command to download the code to your computer:
 ```bash
-git clone [https://github.com/YourUsername/financial-rag-engine.git](https://github.com/YourUsername/financial-rag-engine.git)
+git clone https://github.com/Cyfox-WarZ/financial-rag-engine.git
 cd financial-rag-engine
 ```
 
@@ -59,10 +60,13 @@ pip install -r requirements.txt
 ```
 
 ### 4. Configure Environment Variables
+Add your Google API key to a `.env` file: 
 ```bash
-Add your Google API key to a `.env` file: GEMINI_API_KEY="your_key"
+GEMINI_API_KEY="your_api_key_here"
 ```
 
 ### 5.Launch the Engine
-```bash
- Launch the app: streamlit run app.py
+ Launch the app: 
+ ```bash
+streamlit run app.py
+```
