@@ -44,24 +44,20 @@ To handle the complexity of regulatory filings where standard vector search ofte
 ```bash
 git clone [https://github.com/YourUsername/financial-rag-engine.git](https://github.com/YourUsername/financial-rag-engine.git)
 cd financial-rag-engine`
-3. Add your Google API key to a `.env` file: `GEMINI_API_KEY="your_key"`
-4. Launch the app: `streamlit run app.py`
-
 ### 2. Set up a Virtual Environment
 ```bash
 python -m venv venv
-venv\Scripts\activate  # On Windows
-# source venv/bin/activate  # On macOS/Linux`
+venv\Scripts\activate #On Windows
+source venv/bin/activate #On Mac/Linux`
 
-### 3.Install Dependencies
-'''bash
+### 3. Install Dependencies
+```bash
 pip install -r requirements.txt`
 
-### 4.Configure environment Variables
-'''bash
-Create a .env file in the root directory and add your Google AI API key:
-GEMINI_API_KEY="your_api_key_here"`
+### 4. Configure Environment Variables
+```bash
+Add your Google API key to a `.env` file: `GEMINI_API_KEY="your_key"`
 
 ### 5.Launch the Engine
-'''bash
-streamlit run app.py`
+```bash
+ Launch the app: `streamlit run app.py`
