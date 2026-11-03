@@ -4,3 +4,5 @@ sentence-transformers
 faiss-cpu
 numpy
 google-genai
+pymupdf
+langchain-text-splitters
