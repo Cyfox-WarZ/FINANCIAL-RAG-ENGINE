@@ -51,17 +51,17 @@ cd financial-rag-engine`
 ```bash
 python -m venv venv
 venv\Scripts\activate  # On Windows
-# source venv/bin/activate  # On macOS/Linux
+# source venv/bin/activate  # On macOS/Linux`
 
 ### 3.Install Dependencies
 '''bash
-pip install -r requirements.txt
+pip install -r requirements.txt`
 
 ### 4.Configure environment Variables
 '''bash
 Create a .env file in the root directory and add your Google AI API key:
-GEMINI_API_KEY="your_api_key_here"
+GEMINI_API_KEY="your_api_key_here"`
 
 ### 5.Launch the Engine
 '''bash
-streamlit run app.py
+streamlit run app.py`
