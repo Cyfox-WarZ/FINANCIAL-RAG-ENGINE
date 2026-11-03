@@ -2,30 +2,47 @@
 
 **Live Demo:** [Click here to launch the web app](https://financial-rag-engine-ktlbirflinzxinqgjqno3o.streamlit.app/)
 
-## Overview
-This project is a production-grade Retrieval-Augmented Generation (RAG) engine designed to query financial documents (like SEC 10-K filings) with high accuracy. It was built to demonstrate how to effectively eliminate LLM hallucinations when dealing with strict corporate financial data by utilizing advanced reranking algorithms and prompt engineering.
+A production-grade Retrieval-Augmented Generation (RAG) application designed to analyze complex SEC 10-K financial reports. This engine uses a **Two-Stage Retrieval Pipeline** to extract exact figures from dense financial tables and corporate narratives, ensuring zero hallucinations and high-fidelity synthesis.
 
-## Architecture: Two-Stage Retrieval Pipeline
-Standard vector databases often fail on financial data because embedding models treat concepts like "CEO stepping down" and "laying off staff" as semantically identical (both map to "employment termination"). To solve this, this engine uses a two-stage pipeline:
+Currently configured to analyze the **Alphabet Inc. (GOOG) 2024 Form 10-K**.
 
-1. **Stage 1 - High Recall (Bi-Encoder + FAISS):** The user's query is vectorized using `BAAI/bge-small-en-v1.5`. FAISS performs a fast $O(1)$ nearest-neighbor search to retrieve the top 3 broad candidate facts.
-2. **Stage 2 - High Precision (Cross-Encoder):** A `ms-marco-MiniLM` Cross-Encoder scores the exact semantic relationship between the query and the 3 candidates simultaneously, forcefully rejecting irrelevant data and passing only the single most accurate fact to the LLM.
-3. **Stage 3 - Generation (Gemini API):** Google's Gemini synthesizes the final answer using strict prompt engineering to interpret business terminology without hallucinating outside the provided context.
+## 🧠 Architecture & Two-Stage Pipeline
 
-## Tech Stack
-* **Frontend UI & Cloud Deployment:** Streamlit
-* **Vector Database:** FAISS (Facebook AI Similarity Search)
-* **Embeddings & Reranking:** Sentence-Transformers (Hugging Face)
-* **LLM:** Google GenAI SDK (Gemini)
-* **Environment Management:** Python `python-dotenv`
+To handle the complexity of regulatory filings where standard vector search often fails (especially with numerical tables and nuanced corporate jargon), this engine employs a two-stage retrieval process:
 
-## Key Engineering Features
-* **Zero-Hallucination Guardrails:** The Cross-Encoder guarantees the LLM only receives strictly validated context.
-* **Semantic Prompt Engineering:** The LLM is instructed to act as a financial analyst, allowing it to correctly map natural language queries (e.g., "fired") to corporate terminology (e.g., "headcount reduction").
-* **Graceful Degradation:** Wrapped the external API calls in robust `try-except` blocks to handle Google server rate-limits (503 UNAVAILABLE) without crashing the application. 
+1. **Document Parsing & Chunking:** `PyMuPDF` reads the raw PDF, preserving table structures better than standard extractors. `LangChain` splits the text into 1200-character chunks with a 150-character overlap to prevent severing financial data tables.
+2. **Stage 1 - High Recall (Bi-Encoder):** `FAISS` and `BGE-Small-EN-v1.5` instantly retrieve the top 10 most semantically relevant chunks across the 80+ page document.
+3. **Stage 2 - High Precision (Cross-Encoder):** `MS-MARCO MiniLM-L-6-v2` re-evaluates the retrieved chunks against the exact user query, surfacing the top 3 absolute best facts.
+4. **LLM Synthesis (Gemini):** Google's Gemini models synthesize the strictly grounded facts to answer the user's question, applying domain-specific guardrails.
 
-## Run Locally
-1. Clone the repository: `git clone https://github.com/Cyfox-WarZ/financial-rag-engine.git`
-2. Install dependencies: `pip install -r requirements.txt`
+---
+
+## 🛠️ Tech Stack
+
+* **Frontend UI:** Streamlit (Python)
+* **Document Extraction:** PyMuPDF
+* **Text Chunking:** LangChain (`RecursiveCharacterTextSplitter`)
+* **Vector Database:** FAISS (CPU-optimized)
+* **Embedding Model:** Sentence-Transformers (`BAAI/bge-small-en-v1.5`)
+* **Reranking Model:** Cross-Encoder (`cross-encoder/ms-marco-MiniLM-L-6-v2`)
+* **LLM Integration:** Google GenAI SDK (`gemini-3.5-flash-lite` / `gemini-3.8-flash`)
+
+---
+
+## ✨ Key Features & Engineering Highlights
+
+* **Zero-Hallucination Guardrails:** The LLM is strictly prompted to refuse answering if the exact figures or facts are not present in the retrieved context.
+* **API Fault Tolerance:** Implemented a custom `try-except` routing logic. If the primary lightweight model (`gemini-3.5-flash-lite`) hits a `503 UNAVAILABLE` capacity limit, the engine automatically falls back to `gemini-3.8-flash` to ensure uninterrupted user experience.
+* **Transparent "Behind the Scenes" Extraction:** The UI includes an expandable inspector that displays the exact, raw textual chunks the Cross-Encoder passed to the LLM, allowing for total auditability of the financial data.
+* **Financial Table Preservation:** Optimized chunk sizing (1200 chars) specifically designed to keep SEC financial grid data intact during the vectorization process.
+
+---
+
+## 💻 Run it Locally
+
+### 1. Clone the repository
+```bash
+git clone [https://github.com/YourUsername/financial-rag-engine.git](https://github.com/YourUsername/financial-rag-engine.git)
+cd financial-rag-engine`
 3. Add your Google API key to a `.env` file: `GEMINI_API_KEY="your_key"`
 4. Launch the app: `streamlit run app.py`
